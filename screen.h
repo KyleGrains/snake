@@ -8,9 +8,12 @@
 #include <curses.h>
 
 #include "types.h"
+#include "snake.h"
 
 void InitScreen();
 void UninitScreen();
+void UpdateScreen(characterType);
+void RefreshScreen();
 
 template <class ScreenType>
 class AbstractScreen {
@@ -23,9 +26,8 @@ public:
   AbstractScreen() = default;
   virtual ~AbstractScreen() = 0;
   virtual void Init() {};
-  virtual void Update() {};
+  virtual void Update(characterType) {};
   virtual void Refresh() {};
-  virtual void Display() {};
   virtual void Clear() {};
   virtual void Uninit() {};
 
@@ -37,9 +39,8 @@ private:
 class NcursesScreen: public AbstractScreen<NcursesScreen> {
 public:
   void Init() override;
-  void Update() override;
+  void Update(characterType) override;
   void Refresh() override;
-  void Display() override;
   void Clear() override;
   void Uninit() override;
 
@@ -48,33 +49,7 @@ public:
 private:
   NcursesScreen(const NcursesScreen&) = delete;
   NcursesScreen& operator=(const NcursesScreen&) = delete;
-};
-
-class Screen: public AbstractScreen<Screen> {
-public:
-  void Init() override;
-  void Update() override;
-  void Display() override;
-
-	Screen() = default;
-  ~Screen() = default;
-private:
-  void SetSize(uint w = 50, uint h = 20)
-  {
-    width = w;
-    height = h;
-    size = height * (width + 1); //for the '\n' characters
-  }
-  const std::string& ToString();
-
-  void ClearScreen() { printf("\033[H\033[J"); }
-  void SaveCursorPosition() { printf("\033[s"); }
-  void RestoreCursorPosition() { printf("\033[u"); }
-
-private:
-  uint width = 0;
-  uint height = 0;
-  uint size = 400;
-  std::vector<Dot> coordinates;
-  std::string coordinates_string;
+	int window_width;
+	int window_height;
+	Snake snake;
 };

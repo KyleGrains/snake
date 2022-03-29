@@ -1,6 +1,4 @@
 LDFLAGS=-lcurses -lpthread
 
-CC=g++
-
-all: snake.cpp screen.cpp
-	$(CC) -o snake snake.cpp screen.cpp $(LDFLAGS)
+all: main.cpp snake.cpp screen.cpp
+	$(CXX) -o snake $^ $(LDFLAGS)

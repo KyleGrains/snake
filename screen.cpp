@@ -7,24 +7,73 @@ AbstractScreen<ScreenType>::~AbstractScreen(){}
 void NcursesScreen::Init()
 {
   initscr();
+	keypad(stdscr, TRUE);
 	cbreak();
 	noecho();
-	keypad(stdscr, TRUE);
+  curs_set(0);		
+
+	box(stdscr, '|', '-');
+
+	getmaxyx(stdscr, window_height, window_width);
+	move(window_height/2, window_width/2);
+
+	snake.SetPosition(window_height/2, window_width/2);
+	addch(snake.GetBodyCharacter());
 }
 
-void NcursesScreen::Update()
+void NcursesScreen::Update(characterType output_character)
 {
+	Direction direction = Direction::Stop;
+	switch(output_character)
+	{
+	case 'h':
+	case 'a':
+	case KEY_LEFT:
+		direction = Direction::Left;
+		break;
+	case 'l':
+	case 'd':
+	case KEY_RIGHT:
+		direction = Direction::Right;
+		break;
+	case 'j':
+	case 's':
+	case KEY_DOWN:
+		direction = Direction::Down;
+		break;
+	case 'k':
+	case 'w':
+	case KEY_UP:
+		direction = Direction::Up;
+		break;
+	default:
+		break;
+	}
 
+	Position headPosition;
+	Position previoustailPosition = snake.GetTailPosition();
+	MoveResult result = snake.Move(direction);
+	headPosition = snake.GetHeadPosition();
+	switch(result)
+	{
+		case MoveResult::Eat:
+			mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
+			break;
+		case MoveResult::Nothing:
+			mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
+			mvaddch(previoustailPosition.y, previoustailPosition.x, ' ');
+			break;
+		case MoveResult::Hit:
+			clear();
+			mvaddstr(window_height/2, window_width/2, "Game Over");
+		default:
+			break;
+	}
 }
 
 void NcursesScreen::Refresh()
 {
-
-}
-
-void NcursesScreen::Display()
-{
-
+	refresh();
 }
 
 void NcursesScreen::Clear()
@@ -37,73 +86,6 @@ void NcursesScreen::Uninit()
   endwin();
 }
 
-
-void Screen::Init()
-{
-  SetSize();
-  coordinates.resize(size, Dot::Empty);
-  coordinates_string.resize(size);
-
-  uint index = 0;
-  for(index = 0; index < width; ++index)
-    coordinates[index] = Dot::BorderUp;
-
-  for(index = size - width - 1; index < size - 1; ++index)
-    coordinates[index] = Dot::BorderDown;
-
-  for(index = 0; index < size; index += width + 1)
-    coordinates[index] = Dot::BorderLeft;
-
-  for(index = width - 1; index < size; index += width + 1)
-    coordinates[index] = Dot::BorderRight;
-
-  for(index = width; index < size; index += width + 1)
-    coordinates[index] = Dot::CRLF;
-
-  index = 0;
-  for(auto &dot: coordinates)
-  {
-    switch(dot)
-    {
-    case Dot::Border:
-    case Dot::BorderUp:
-    case Dot::BorderDown:
-    case Dot::BorderLeft:
-    case Dot::BorderRight:
-      coordinates_string[index] = '=';
-      break;
-    case Dot::CRLF:
-      coordinates_string[index] = '\n';
-      break;
-    default:
-      coordinates_string[index] = ' ';
-      break;
-    }
-    ++index;
-  }
-};
-
-const std::string& Screen::ToString()
-{
-  return coordinates_string;
-}
-
-void Screen::Update()
-{
-  uint i = 0;
-
-};
-
-void Screen::Display()
-{
-  ClearScreen();
-  SaveCursorPosition();
-  std::cout << "Snake Game \n";
-  std::cout << ToString().c_str();
-  RestoreCursorPosition();
-  std::cout << std::flush;
-};
-
 typedef NcursesScreen theScreen;
 void InitScreen()
 {
@@ -115,3 +97,12 @@ void UninitScreen()
   theScreen::GetInstance().Uninit();
 }
 
+void RefreshScreen()
+{
+  theScreen::GetInstance().Refresh();
+}
+
+void UpdateScreen(characterType output_character)
+{
+  theScreen::GetInstance().Update(output_character);
+}
