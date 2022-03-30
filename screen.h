@@ -1,3 +1,5 @@
+#ifndef SCREEN_H
+#define SCREEN_H
 #include <chrono>
 #include <cstdint>
 #include <mutex>
@@ -7,36 +9,34 @@
 
 #include <curses.h>
 
-#include "types.h"
 #include "snake.h"
+#include "types.h"
 
 void InitScreen();
 void UninitScreen();
 void UpdateScreen(characterType);
 void RefreshScreen();
 
-template <class ScreenType>
-class AbstractScreen {
+template <class ScreenType> class AbstractScreen {
 public:
-  static ScreenType& GetInstance()
-  {
+  static ScreenType &GetInstance() {
     static ScreenType screen;
     return screen;
   }
   AbstractScreen() = default;
   virtual ~AbstractScreen() = 0;
-  virtual void Init() {};
-  virtual void Update(characterType) {};
-  virtual void Refresh() {};
-  virtual void Clear() {};
-  virtual void Uninit() {};
+  virtual void Init(){};
+  virtual void Update(characterType){};
+  virtual void Refresh(){};
+  virtual void Clear(){};
+  virtual void Uninit(){};
 
 private:
-  AbstractScreen(const AbstractScreen&) = delete;
-  AbstractScreen& operator=(const AbstractScreen&) = delete;
+  AbstractScreen(const AbstractScreen &) = delete;
+  AbstractScreen &operator=(const AbstractScreen &) = delete;
 };
 
-class NcursesScreen: public AbstractScreen<NcursesScreen> {
+class NcursesScreen : public AbstractScreen<NcursesScreen> {
 public:
   void Init() override;
   void Update(characterType) override;
@@ -46,10 +46,13 @@ public:
 
   NcursesScreen() = default;
   ~NcursesScreen() = default;
+
 private:
-  NcursesScreen(const NcursesScreen&) = delete;
-  NcursesScreen& operator=(const NcursesScreen&) = delete;
-	int window_width;
-	int window_height;
-	Snake snake;
+  NcursesScreen(const NcursesScreen &) = delete;
+  NcursesScreen &operator=(const NcursesScreen &) = delete;
+  int window_width;
+  int window_height;
+  Snake snake;
 };
+
+#endif
