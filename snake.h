@@ -1,29 +1,27 @@
 #ifndef SNAKE_H
 #define SNAKE_H
+#include <deque>
 #include "types.h"
 
 class Snake {
-public:
+ public:
   Snake() = default;
-  Snake(const Snake &) = delete;
+  Snake(const Snake&) = delete;
   MoveResult Move(Direction);
   char GetBodyCharacter();
   Position GetTailPosition();
+	void PopTail();
   Position GetHeadPosition();
-  void SetPosition(int y, int x);
+  void InitPosition(int y, int x);
+	std::deque<Position>& GetPosition();
+  void SetBorderSize(int y, int x);
 
-private:
-  Position headPosition;
-  Position tailPosition;
+ private:
+	bool IsHit();
+	std::deque<Position> positions;
+	Direction movedirection;
+  int screen_width;
+  int screen_height;
 };
-
-inline char Snake::GetBodyCharacter() { return '*'; }
-
-inline void Snake::SetPosition(int y, int x) {
-  headPosition.y = y;
-  headPosition.x = x;
-  tailPosition.y = y;
-  tailPosition.x = x;
-}
 
 #endif

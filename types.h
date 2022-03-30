@@ -7,11 +7,12 @@ using characterType = int;
 struct Position {
   int y;
   int x;
+	Position(int ty, int tx): y(ty), x(tx) {};
 };
 
-enum class Direction { Up, Down, Left, Right, Stop };
+enum class Direction { Up, Right, Left, Down, Stop };
 
-enum class MoveResult { Eat, Nothing, Hit };
+enum class MoveResult { Move, Eat, Nothing, Hit };
 
 enum class Dot {
   Empty,

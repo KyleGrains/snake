@@ -19,7 +19,9 @@ std::mutex character_mutex;
 
 constexpr std::chrono::milliseconds sleeptime(100ms);
 
-int GetCharacter() { return getch(); }
+int GetCharacter() {
+  return getch();
+}
 
 struct ReadInput {
   void operator()() {

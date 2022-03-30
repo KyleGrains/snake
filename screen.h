@@ -17,9 +17,10 @@ void UninitScreen();
 void UpdateScreen(characterType);
 void RefreshScreen();
 
-template <class ScreenType> class AbstractScreen {
-public:
-  static ScreenType &GetInstance() {
+template <class ScreenType>
+class AbstractScreen {
+ public:
+  static ScreenType& GetInstance() {
     static ScreenType screen;
     return screen;
   }
@@ -31,13 +32,13 @@ public:
   virtual void Clear(){};
   virtual void Uninit(){};
 
-private:
-  AbstractScreen(const AbstractScreen &) = delete;
-  AbstractScreen &operator=(const AbstractScreen &) = delete;
+ private:
+  AbstractScreen(const AbstractScreen&) = delete;
+  AbstractScreen& operator=(const AbstractScreen&) = delete;
 };
 
 class NcursesScreen : public AbstractScreen<NcursesScreen> {
-public:
+ public:
   void Init() override;
   void Update(characterType) override;
   void Refresh() override;
@@ -47,11 +48,11 @@ public:
   NcursesScreen() = default;
   ~NcursesScreen() = default;
 
-private:
-  NcursesScreen(const NcursesScreen &) = delete;
-  NcursesScreen &operator=(const NcursesScreen &) = delete;
-  int window_width;
-  int window_height;
+ private:
+  NcursesScreen(const NcursesScreen&) = delete;
+  NcursesScreen& operator=(const NcursesScreen&) = delete;
+  int screen_width;
+  int screen_height;
   Snake snake;
 };
 

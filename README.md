@@ -1,4 +1,4 @@
-# Snake
+#Snake
 Simple snake game for practicing
 
 How to Play:
