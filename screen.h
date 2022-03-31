@@ -5,6 +5,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+//#include <unordered_set>
 #include <vector>
 
 #include <curses.h>
@@ -51,9 +52,13 @@ class NcursesScreen : public AbstractScreen<NcursesScreen> {
  private:
   NcursesScreen(const NcursesScreen&) = delete;
   NcursesScreen& operator=(const NcursesScreen&) = delete;
+  void GenerateFood();
   int screen_width;
   int screen_height;
   Snake snake;
+  std::vector<Position> generating_foods;
+  std::vector<Position> foods;
+  std::mutex foods_mutex;
 };
 
 #endif

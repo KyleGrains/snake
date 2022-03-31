@@ -1,5 +1,11 @@
 #include "screen.h"
+#include <algorithm>
+#include <future>
 #include <iostream>
+#include <random>
+
+using namespace std::chrono_literals;
+constexpr std::chrono::milliseconds generate_interval(3s);
 
 template <class ScreenType>
 AbstractScreen<ScreenType>::~AbstractScreen() {}
@@ -17,9 +23,27 @@ void NcursesScreen::Init() {
   move(screen_height / 2, screen_width / 2);
 
   snake.InitPosition(screen_height / 2, screen_width / 2);
-	snake.SetBorderSize(screen_height, screen_width);
-	for(auto pos: snake.GetPosition())
-  addch(snake.GetBodyCharacter());
+  snake.SetBorderSize(screen_height, screen_width);
+  for (auto pos : snake.GetPosition())
+    addch(snake.GetBodyCharacter());
+
+  std::thread([this] { this->GenerateFood(); }).detach();
+}
+
+void NcursesScreen::GenerateFood() {
+  std::random_device r;
+  std::default_random_engine e(r());
+  std::uniform_int_distribution<int> random_x_distribution(1, screen_width - 1);
+  std::uniform_int_distribution<int> random_y_distribution(1,
+                                                           screen_height - 1);
+  while (true) {
+    std::this_thread::sleep_for(generate_interval);
+    int x = random_x_distribution(e);
+    int y = random_y_distribution(e);
+
+    std::lock_guard<std::mutex> lock(foods_mutex);
+    generating_foods.push_back(Position(y, x));
+  }
 }
 
 void NcursesScreen::Update(characterType output_character) {
@@ -52,9 +76,17 @@ void NcursesScreen::Update(characterType output_character) {
   Position previoustailPosition = snake.GetTailPosition();
   MoveResult result = snake.Move(direction);
   Position headPosition = snake.GetHeadPosition();
+
+  auto find_food = std::find(begin(foods), end(foods), headPosition);
+  if (find_food != foods.end()) {
+    foods.erase(find_food);
+    result = MoveResult::Eat;
+  }
+
   switch (result) {
     case MoveResult::Eat:
       mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
+      snake.GrowBack(previoustailPosition);
       break;
     case MoveResult::Move:
       mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
@@ -62,9 +94,16 @@ void NcursesScreen::Update(characterType output_character) {
       break;
     case MoveResult::Hit:
       clear();
-      mvaddstr(screen_height / 2, screen_width / 2, "Game Over");
+      mvaddstr(screen_height / 2, screen_width / 2 - 4, "Game Over");
     default:
       break;
+  }
+  std::lock_guard<std::mutex> lock(foods_mutex);
+  if (!generating_foods.empty()) {
+    Position food = generating_foods.back();
+    generating_foods.pop_back();
+    mvaddch(food.y, food.x, 'o');
+    foods.push_back(food);
   }
 }
 

@@ -10,16 +10,17 @@ class Snake {
   MoveResult Move(Direction);
   char GetBodyCharacter();
   Position GetTailPosition();
-	void PopTail();
+  void PopTail();
   Position GetHeadPosition();
   void InitPosition(int y, int x);
-	std::deque<Position>& GetPosition();
+  std::deque<Position>& GetPosition();
   void SetBorderSize(int y, int x);
+  void GrowBack(const Position& position);
 
  private:
-	bool IsHit();
-	std::deque<Position> positions;
-	Direction movedirection;
+  bool IsHit();
+  std::deque<Position> positions;
+  Direction movedirection;
   int screen_width;
   int screen_height;
 };

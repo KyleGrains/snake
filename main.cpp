@@ -10,13 +10,12 @@
 #include "screen.h"
 #include "types.h"
 
-using namespace std::chrono_literals;
-
 characterType input_character = 'l';
 characterType processed_character = 'l';
 characterType output_character = 'l';
 std::mutex character_mutex;
 
+using namespace std::chrono_literals;
 constexpr std::chrono::milliseconds sleeptime(100ms);
 
 int GetCharacter() {
