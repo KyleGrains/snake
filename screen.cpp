@@ -23,20 +23,23 @@ void NcursesScreen::Init() {
   move(screen_height / 2, screen_width / 2);
 
   snake.InitPosition(screen_height / 2, screen_width / 2);
-  snake.SetBorderSize(screen_height, screen_width);
-  for (auto pos : snake.GetPosition())
+  for (const auto& pos : snake.GetPositions())
     addch(snake.GetBodyCharacter());
 
   std::thread([this] { this->GenerateFood(); }).detach();
+  stopThread.store(false);
 }
 
 void NcursesScreen::GenerateFood() {
   std::random_device r;
   std::default_random_engine e(r());
-  std::uniform_int_distribution<int> random_x_distribution(1, screen_width - 1);
-  std::uniform_int_distribution<int> random_y_distribution(1,
-                                                           screen_height - 1);
+  typedef std::uniform_int_distribution<int> random_distribution;
+  random_distribution random_x_distribution(1, screen_width - 1);
+  random_distribution random_y_distribution(1, screen_height - 1);
+
   while (true) {
+    if (stopThread.load())
+      return;
     std::this_thread::sleep_for(generate_interval);
     int x = random_x_distribution(e);
     int y = random_y_distribution(e);
@@ -73,28 +76,34 @@ void NcursesScreen::Update(characterType output_character) {
       break;
   }
 
-  Position previoustailPosition = snake.GetTailPosition();
+  const Position& snakePreviousTail = snake.GetTailPosition();
   MoveResult result = snake.Move(direction);
-  Position headPosition = snake.GetHeadPosition();
+  const Position& snakeHead = snake.GetHeadPosition();
 
-  auto find_food = std::find(begin(foods), end(foods), headPosition);
+  auto find_food = std::find(foods.begin(), foods.end(), snakeHead);
   if (find_food != foods.end()) {
     foods.erase(find_food);
     result = MoveResult::Eat;
   }
 
+  if (snakeHead.x == 0 || snakeHead.x == screen_width || snakeHead.y == 0 ||
+      snakeHead.y == screen_height)
+    result = MoveResult::Hit;
+
   switch (result) {
     case MoveResult::Eat:
-      mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
-      snake.GrowBack(previoustailPosition);
+      mvaddch(snakeHead.y, snakeHead.x, snake.GetBodyCharacter());
+      snake.GrowBack(snakePreviousTail);
       break;
     case MoveResult::Move:
-      mvaddch(headPosition.y, headPosition.x, snake.GetBodyCharacter());
-      mvaddch(previoustailPosition.y, previoustailPosition.x, ' ');
+      mvaddch(snakeHead.y, snakeHead.x, snake.GetBodyCharacter());
+      mvaddch(snakePreviousTail.y, snakePreviousTail.x, ' ');
       break;
     case MoveResult::Hit:
+      stopThread.store(true);
       clear();
       mvaddstr(screen_height / 2, screen_width / 2 - 4, "Game Over");
+      return;
     default:
       break;
   }
@@ -119,6 +128,10 @@ void NcursesScreen::Uninit() {
   endwin();
 }
 
+bool NcursesScreen::IsGameOver() {
+  return stopThread.load();
+}
+
 typedef NcursesScreen theScreen;
 void InitScreen() {
   theScreen::GetInstance().Init();
@@ -130,6 +143,10 @@ void UninitScreen() {
 
 void RefreshScreen() {
   theScreen::GetInstance().Refresh();
+}
+
+bool IsGameOver() {
+  return theScreen::GetInstance().IsGameOver();
 }
 
 void UpdateScreen(characterType output_character) {

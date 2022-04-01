@@ -1,5 +1,6 @@
 #ifndef SCREEN_H
 #define SCREEN_H
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <mutex>
@@ -17,6 +18,7 @@ void InitScreen();
 void UninitScreen();
 void UpdateScreen(characterType);
 void RefreshScreen();
+bool IsGameOver();
 
 template <class ScreenType>
 class AbstractScreen {
@@ -32,6 +34,7 @@ class AbstractScreen {
   virtual void Refresh(){};
   virtual void Clear(){};
   virtual void Uninit(){};
+  virtual bool IsGameOver() { return false; };
 
  private:
   AbstractScreen(const AbstractScreen&) = delete;
@@ -45,6 +48,7 @@ class NcursesScreen : public AbstractScreen<NcursesScreen> {
   void Refresh() override;
   void Clear() override;
   void Uninit() override;
+  bool IsGameOver() override;
 
   NcursesScreen() = default;
   ~NcursesScreen() = default;
@@ -59,6 +63,7 @@ class NcursesScreen : public AbstractScreen<NcursesScreen> {
   std::vector<Position> generating_foods;
   std::vector<Position> foods;
   std::mutex foods_mutex;
+  std::atomic<bool> stopThread;
 };
 
 #endif

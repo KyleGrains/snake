@@ -7,20 +7,21 @@ class Snake {
  public:
   Snake() = default;
   Snake(const Snake&) = delete;
-  MoveResult Move(Direction);
-  char GetBodyCharacter();
-  Position GetTailPosition();
-  void PopTail();
-  Position GetHeadPosition();
+
   void InitPosition(int y, int x);
-  std::deque<Position>& GetPosition();
-  void SetBorderSize(int y, int x);
+  MoveResult Move(Direction);
+  void PopTail();
   void GrowBack(const Position& position);
 
+  const char GetBodyCharacter() const;
+  const Position& GetHeadPosition() const;
+  const Position& GetTailPosition() const;
+  const std::deque<Position>& GetPositions() const;
+
  private:
-  bool IsHit();
+  bool HitItself();
   std::deque<Position> positions;
-  Direction movedirection;
+  Direction moveDirection;
   int screen_width;
   int screen_height;
 };
