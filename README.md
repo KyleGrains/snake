@@ -5,4 +5,6 @@ Simple snake game for practicing
 Move the snake with Arrow Keys
 
 ## TODO
-Detect collision with itself
+- Scoring board 
+- Re-factor the classes
+- Better UI
