@@ -5,7 +5,6 @@
 #include <random>
 
 using namespace std::chrono_literals;
-constexpr std::chrono::milliseconds generate_interval(3s);
 
 template <class ScreenType>
 AbstractScreen<ScreenType>::~AbstractScreen() {}
@@ -26,6 +25,8 @@ void NcursesScreen::Init() {
   for (const auto& pos : snake.GetPositions())
     addch(snake.GetBodyCharacter());
 
+  foodPosition = Position(0, 0);
+
   std::thread([this] { this->GenerateFood(); }).detach();
   stopThread.store(false);
 }
@@ -40,12 +41,14 @@ void NcursesScreen::GenerateFood() {
   while (true) {
     if (stopThread.load())
       return;
-    std::this_thread::sleep_for(generate_interval);
     int x = random_x_distribution(e);
     int y = random_y_distribution(e);
 
-    std::lock_guard<std::mutex> lock(foods_mutex);
-    generating_foods.push_back(Position(y, x));
+    std::unique_lock<std::mutex> foodLock(foodMutex);
+    foodCond.wait(foodLock,
+                  [this] { return (foodPosition == Position(0, 0)); });
+    foodPosition = Position(y, x);
+    mvaddch(foodPosition.y, foodPosition.x, 'o');
   }
 }
 
@@ -80,9 +83,7 @@ void NcursesScreen::Update(characterType output_character) {
   MoveResult result = snake.Move(direction);
   const Position& snakeHead = snake.GetHeadPosition();
 
-  auto find_food = std::find(foods.begin(), foods.end(), snakeHead);
-  if (find_food != foods.end()) {
-    foods.erase(find_food);
+  if (snakeHead == foodPosition) {
     result = MoveResult::Eat;
   }
 
@@ -94,6 +95,11 @@ void NcursesScreen::Update(characterType output_character) {
     case MoveResult::Eat:
       mvaddch(snakeHead.y, snakeHead.x, snake.GetBodyCharacter());
       snake.GrowBack(snakePreviousTail);
+      {
+        std::lock_guard<std::mutex> lock(foodMutex);
+        foodPosition = Position(0, 0);
+        foodCond.notify_one();
+      }
       break;
     case MoveResult::Move:
       mvaddch(snakeHead.y, snakeHead.x, snake.GetBodyCharacter());
@@ -106,13 +112,6 @@ void NcursesScreen::Update(characterType output_character) {
       return;
     default:
       break;
-  }
-  std::lock_guard<std::mutex> lock(foods_mutex);
-  if (!generating_foods.empty()) {
-    Position food = generating_foods.back();
-    generating_foods.pop_back();
-    mvaddch(food.y, food.x, 'o');
-    foods.push_back(food);
   }
 }
 

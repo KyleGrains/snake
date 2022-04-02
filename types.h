@@ -7,8 +7,12 @@ using characterType = int;
 struct Position {
   int y;
   int x;
+  Position() : y(0), x(0){};
   Position(int ty, int tx) : y(ty), x(tx){};
-  bool operator==(const Position& rhs) { return (y == rhs.y) && (x == rhs.x); }
+  Position(const Position& rhs) : y(rhs.y), x(rhs.x){};
+  friend bool operator==(const Position& lhs, const Position& rhs) {
+    return (lhs.y == rhs.y) && (lhs.x == rhs.x);
+  }
 };
 
 enum class Direction { Up, Right, Left, Down, Stop };

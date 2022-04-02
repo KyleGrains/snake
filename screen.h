@@ -2,6 +2,7 @@
 #define SCREEN_H
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <mutex>
 #include <string>
@@ -60,9 +61,9 @@ class NcursesScreen : public AbstractScreen<NcursesScreen> {
   int screen_width;
   int screen_height;
   Snake snake;
-  std::vector<Position> generating_foods;
-  std::vector<Position> foods;
-  std::mutex foods_mutex;
+  std::mutex foodMutex;
+  std::condition_variable foodCond;
+  Position foodPosition;
   std::atomic<bool> stopThread;
 };
 
