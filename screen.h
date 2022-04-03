@@ -42,6 +42,9 @@ class AbstractScreen {
   AbstractScreen& operator=(const AbstractScreen&) = delete;
 };
 
+template <class ScreenType>
+AbstractScreen<ScreenType>::~AbstractScreen() {}
+
 class NcursesScreen : public AbstractScreen<NcursesScreen> {
  public:
   void Init() override;
@@ -65,6 +68,7 @@ class NcursesScreen : public AbstractScreen<NcursesScreen> {
   std::condition_variable foodCond;
   Position foodPosition;
   std::atomic<bool> stopThread;
+  uint score;
 };
 
 #endif

@@ -1,7 +1,9 @@
 #include "snake.h"
 #include <ncurses.h>
 #include <algorithm>
+#include <cassert>
 #include "types.h"
+
 void Snake::InitPosition(int y, int x) {
   positions.emplace_front(y, x - 4);
   positions.emplace_front(y, x - 3);
@@ -34,6 +36,7 @@ MoveResult Snake::Move(Direction direction) {
       positions.emplace_front(head.y + 1, head.x);
       break;
     default:
+      abort();
       break;
   }
   PopTail();
@@ -43,7 +46,8 @@ MoveResult Snake::Move(Direction direction) {
 }
 
 void Snake::PopTail() {
-  return positions.pop_back();
+  assert(!positions.empty());
+  positions.pop_back();
 }
 
 void Snake::GrowBack(const Position& position) {

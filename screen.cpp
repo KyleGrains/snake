@@ -6,9 +6,6 @@
 
 using namespace std::chrono_literals;
 
-template <class ScreenType>
-AbstractScreen<ScreenType>::~AbstractScreen() {}
-
 void NcursesScreen::Init() {
   initscr();
   keypad(stdscr, TRUE);
@@ -17,6 +14,7 @@ void NcursesScreen::Init() {
   curs_set(0);
 
   border('|', '|', '-', '-', '+', '+', '+', '+');
+  mvaddstr(0, 0, "Score: 0");
 
   getmaxyx(stdscr, screen_height, screen_width);
   move(screen_height / 2, screen_width / 2);
@@ -26,6 +24,7 @@ void NcursesScreen::Init() {
     addch(snake.GetBodyCharacter());
 
   foodPosition = Position(0, 0);
+  score = 0;
 
   std::thread([this] { this->GenerateFood(); }).detach();
   stopThread.store(false);
@@ -100,6 +99,9 @@ void NcursesScreen::Update(characterType output_character) {
         foodPosition = Position(0, 0);
         foodCond.notify_one();
       }
+      score += 10;
+      mvaddstr(0, 0, "Score: ");
+      addstr(std::to_string(score).c_str());
       break;
     case MoveResult::Move:
       mvaddch(snakeHead.y, snakeHead.x, snake.GetBodyCharacter());
