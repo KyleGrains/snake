@@ -3,6 +3,13 @@ Simple snake game for practicing
 
 ## How to Play
 Move the snake with Arrow Keys
+```
+snake 
+```
+or list options
+```
+snake --help
+```
 
 ## TODO
 - Scoring board 

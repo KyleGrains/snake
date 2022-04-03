@@ -29,4 +29,6 @@ enum class Dot {
   BorderRight,
   CRLF
 };
+
+enum class GameMode { Normal, Help };
 #endif

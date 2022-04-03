@@ -1,14 +1,18 @@
+#include "screen.h"
+#include "types.h"
+
+#include <curses.h>
+
+#include "getopt.h"
+#include "unistd.h"
+
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
-
-#include <curses.h>
-
-#include "screen.h"
-#include "types.h"
 
 characterType input_character = 'l';
 characterType processed_character = 'l';
@@ -53,8 +57,39 @@ struct Display {
   }
 };
 
-int main() {
-  InitScreen();
+static struct option long_options[] = {{"help", no_argument, 0, '?'},
+                                       {"width", required_argument, 0, 'w'},
+                                       {"height", required_argument, 0, 'h'},
+                                       {0, 0, 0, 0}};
+
+int main(int argc, char** argv) {
+  int c;
+  int width = 0, height = 0;
+  GameMode gameMode = GameMode::Normal;
+  while (1) {
+    c = getopt_long(argc, argv, "?w:h:", long_options, NULL);
+
+    if (c == -1)
+      break;
+
+    switch (c) {
+      case '?':
+        gameMode = GameMode::Help;
+        break;
+      case 'h':
+        if (optarg)
+          height = std::atoi(optarg);
+        break;
+      case 'w':
+        if (optarg)
+          width = std::atoi(optarg);
+        break;
+      default:
+        gameMode = GameMode::Normal;
+    }
+  }
+
+  InitScreen(gameMode, height, width);
 
   std::thread tReadInput((ReadInput()));
   std::thread tProcessInput((Display()));

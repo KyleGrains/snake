@@ -15,7 +15,7 @@
 #include "snake.h"
 #include "types.h"
 
-void InitScreen();
+void InitScreen(GameMode gameMode, int height = 0, int width = 0);
 void UninitScreen();
 void UpdateScreen(characterType);
 void RefreshScreen();
@@ -30,7 +30,7 @@ class AbstractScreen {
   }
   AbstractScreen() = default;
   virtual ~AbstractScreen() = 0;
-  virtual void Init(){};
+  virtual void Init(GameMode gameMode, int height = 0, int width = 0){};
   virtual void Update(characterType){};
   virtual void Refresh(){};
   virtual void Clear(){};
@@ -47,7 +47,7 @@ AbstractScreen<ScreenType>::~AbstractScreen() {}
 
 class NcursesScreen : public AbstractScreen<NcursesScreen> {
  public:
-  void Init() override;
+  void Init(GameMode gameMode, int height = 0, int width = 0) override;
   void Update(characterType) override;
   void Refresh() override;
   void Clear() override;

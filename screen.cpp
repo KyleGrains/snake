@@ -6,28 +6,50 @@
 
 using namespace std::chrono_literals;
 
-void NcursesScreen::Init() {
+void Help() {
+  std::cout << "Usage: snake [-?]        [--help]\n"
+            << "             [-w <size>] [--width=<size>]\n"
+            << "             [-h <size>] [--height=<size>]\n"
+            << "Start snake game with default screen size (full screen).\n";
+}
+
+void NcursesScreen::Init(GameMode gameMode, int height, int width) {
+  if (gameMode == GameMode::Help) {
+    Help();
+    exit(0);
+  }
   initscr();
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
   curs_set(0);
 
-  border('|', '|', '-', '-', '+', '+', '+', '+');
+  getmaxyx(stdscr, screen_height, screen_width);
+  if (height && height < screen_height)
+    screen_height = height;
+  if (width && width < screen_width)
+    screen_width = width;
+
+  if (width == 0 && height == 0) {
+    border('|', '|', '-', '-', '+', '+', '+', '+');
+  } else {
+    mvvline(0, 0, '|', screen_height);
+    mvvline(0, screen_width, '|', screen_height);
+    mvhline(0, 0, '-', screen_width + 1);
+    mvhline(screen_height, 0, '-', screen_width + 1);
+  }
   mvaddstr(0, 0, "Score: 0");
 
-  getmaxyx(stdscr, screen_height, screen_width);
-  move(screen_height / 2, screen_width / 2);
-
   snake.InitPosition(screen_height / 2, screen_width / 2);
+  move(screen_height / 2, screen_width / 2);
   for (const auto& pos : snake.GetPositions())
     addch(snake.GetBodyCharacter());
 
   foodPosition = Position(0, 0);
   score = 0;
+  stopThread.store(false);
 
   std::thread([this] { this->GenerateFood(); }).detach();
-  stopThread.store(false);
 }
 
 void NcursesScreen::GenerateFood() {
@@ -134,8 +156,8 @@ bool NcursesScreen::IsGameOver() {
 }
 
 typedef NcursesScreen theScreen;
-void InitScreen() {
-  theScreen::GetInstance().Init();
+void InitScreen(GameMode gameMode, int height, int width) {
+  theScreen::GetInstance().Init(gameMode, height, width);
 }
 
 void UninitScreen() {

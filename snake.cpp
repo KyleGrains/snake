@@ -4,12 +4,9 @@
 #include <cassert>
 #include "types.h"
 
-void Snake::InitPosition(int y, int x) {
-  positions.emplace_front(y, x - 4);
-  positions.emplace_front(y, x - 3);
-  positions.emplace_front(y, x - 2);
-  positions.emplace_front(y, x - 1);
-  positions.emplace_front(y, x);
+void Snake::InitPosition(int y, int x, int length) {
+  for (int i = 0; i < 5; ++i)
+    positions.emplace_front(y, x + i);
 }
 
 MoveResult Snake::Move(Direction direction) {

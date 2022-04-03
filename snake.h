@@ -8,7 +8,7 @@ class Snake {
   Snake() = default;
   Snake(const Snake&) = delete;
 
-  void InitPosition(int y, int x);
+  void InitPosition(int y, int x, int length = 5);
   MoveResult Move(Direction);
   void PopTail();
   void GrowBack(const Position& position);
