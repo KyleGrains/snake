@@ -4,9 +4,27 @@
 #include <iostream>
 #include <random>
 
-using namespace std::chrono_literals;
+void InitScreen(GameMode gameMode, int height, int width) {
+  NcursesScreen::GetInstance().Init(gameMode, height, width);
+}
 
-void Help() {
+void UninitScreen() {
+  NcursesScreen::GetInstance().Uninit();
+}
+
+void RefreshScreen() {
+  NcursesScreen::GetInstance().Refresh();
+}
+
+void UpdateScreen(characterType output_character) {
+  NcursesScreen::GetInstance().Update(output_character);
+}
+
+bool IsGameOver() {
+  return NcursesScreen::GetInstance().IsGameOver();
+}
+
+void ShowHelp() {
   std::cout << "Usage: snake [-?]        [--help]\n"
             << "             [-w <size>] [--width=<size>]\n"
             << "             [-h <size>] [--height=<size>]\n"
@@ -15,7 +33,7 @@ void Help() {
 
 void NcursesScreen::Init(GameMode gameMode, int height, int width) {
   if (gameMode == GameMode::Help) {
-    Help();
+    ShowHelp();
     exit(0);
   }
   initscr();
@@ -131,7 +149,7 @@ void NcursesScreen::Update(characterType output_character) {
       break;
     case MoveResult::Hit:
       stopThread.store(true);
-      clear();
+      Clear();
       mvaddstr(screen_height / 2, screen_width / 2 - 4, "Game Over");
       return;
     default:
@@ -155,23 +173,3 @@ bool NcursesScreen::IsGameOver() {
   return stopThread.load();
 }
 
-typedef NcursesScreen theScreen;
-void InitScreen(GameMode gameMode, int height, int width) {
-  theScreen::GetInstance().Init(gameMode, height, width);
-}
-
-void UninitScreen() {
-  theScreen::GetInstance().Uninit();
-}
-
-void RefreshScreen() {
-  theScreen::GetInstance().Refresh();
-}
-
-bool IsGameOver() {
-  return theScreen::GetInstance().IsGameOver();
-}
-
-void UpdateScreen(characterType output_character) {
-  theScreen::GetInstance().Update(output_character);
-}

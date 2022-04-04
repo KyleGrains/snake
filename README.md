@@ -1,5 +1,6 @@
 # Snake
 Simple snake game for practicing
+needs the *ncurses* library
 
 ## How to Play
 Move the snake with Arrow Keys

@@ -7,7 +7,6 @@
 #include <mutex>
 #include <string>
 #include <thread>
-//#include <unordered_set>
 #include <vector>
 
 #include <curses.h>
@@ -21,38 +20,18 @@ void UpdateScreen(characterType);
 void RefreshScreen();
 bool IsGameOver();
 
-template <class ScreenType>
-class AbstractScreen {
+class NcursesScreen{
  public:
-  static ScreenType& GetInstance() {
-    static ScreenType screen;
+  static NcursesScreen& GetInstance() {
+    static NcursesScreen screen;
     return screen;
   }
-  AbstractScreen() = default;
-  virtual ~AbstractScreen() = 0;
-  virtual void Init(GameMode gameMode, int height = 0, int width = 0){};
-  virtual void Update(characterType){};
-  virtual void Refresh(){};
-  virtual void Clear(){};
-  virtual void Uninit(){};
-  virtual bool IsGameOver() { return false; };
-
- private:
-  AbstractScreen(const AbstractScreen&) = delete;
-  AbstractScreen& operator=(const AbstractScreen&) = delete;
-};
-
-template <class ScreenType>
-AbstractScreen<ScreenType>::~AbstractScreen() {}
-
-class NcursesScreen : public AbstractScreen<NcursesScreen> {
- public:
-  void Init(GameMode gameMode, int height = 0, int width = 0) override;
-  void Update(characterType) override;
-  void Refresh() override;
-  void Clear() override;
-  void Uninit() override;
-  bool IsGameOver() override;
+  void Init(GameMode gameMode, int height = 0, int width = 0);
+  void Update(characterType);
+  void Refresh();
+  void Clear();
+  void Uninit();
+  bool IsGameOver();
 
   NcursesScreen() = default;
   ~NcursesScreen() = default;
