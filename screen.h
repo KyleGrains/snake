@@ -16,18 +16,20 @@
 
 void InitScreen(GameMode gameMode, int height = 0, int width = 0);
 void UninitScreen();
-void UpdateScreen(characterType);
+void GetInputCharacter();
+void UpdateScreen();
 void RefreshScreen();
 bool IsGameOver();
 
-class NcursesScreen{
+class NcursesScreen {
  public:
   static NcursesScreen& GetInstance() {
     static NcursesScreen screen;
     return screen;
   }
   void Init(GameMode gameMode, int height = 0, int width = 0);
-  void Update(characterType);
+  void GetInputCharacter();
+  void Update();
   void Refresh();
   void Clear();
   void Uninit();
@@ -42,6 +44,7 @@ class NcursesScreen{
   void GenerateFood();
   int screen_width;
   int screen_height;
+  characterType inputCharacter;
   Snake snake;
   std::mutex foodMutex;
   std::condition_variable foodCond;

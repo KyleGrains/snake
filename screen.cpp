@@ -12,12 +12,16 @@ void UninitScreen() {
   NcursesScreen::GetInstance().Uninit();
 }
 
-void RefreshScreen() {
-  NcursesScreen::GetInstance().Refresh();
+void GetInputCharacter() {
+  NcursesScreen::GetInstance().GetInputCharacter();
 }
 
-void UpdateScreen(characterType output_character) {
-  NcursesScreen::GetInstance().Update(output_character);
+void UpdateScreen() {
+  NcursesScreen::GetInstance().Update();
+}
+
+void RefreshScreen() {
+  NcursesScreen::GetInstance().Refresh();
 }
 
 bool IsGameOver() {
@@ -40,6 +44,7 @@ void NcursesScreen::Init(GameMode gameMode, int height, int width) {
   keypad(stdscr, TRUE);
   cbreak();
   noecho();
+  nodelay(stdscr, TRUE);
   curs_set(0);
 
   getmaxyx(stdscr, screen_height, screen_width);
@@ -67,6 +72,8 @@ void NcursesScreen::Init(GameMode gameMode, int height, int width) {
   score = 0;
   stopThread.store(false);
 
+  inputCharacter = 'l';
+
   std::thread([this] { this->GenerateFood(); }).detach();
 }
 
@@ -91,9 +98,16 @@ void NcursesScreen::GenerateFood() {
   }
 }
 
-void NcursesScreen::Update(characterType output_character) {
+void NcursesScreen::GetInputCharacter() {
+  int tempCharacter;
+  if ((tempCharacter = getch()) != ERR)
+    inputCharacter = tempCharacter;
+  flushinp();
+}
+
+void NcursesScreen::Update() {
   Direction direction = Direction::Stop;
-  switch (output_character) {
+  switch (inputCharacter) {
     case 'h':
     case 'a':
     case KEY_LEFT:
@@ -170,6 +184,5 @@ void NcursesScreen::Uninit() {
 }
 
 bool NcursesScreen::IsGameOver() {
-  return stopThread.load();
+  return ((stopThread.load()) || (inputCharacter == 'q'));
 }
-
