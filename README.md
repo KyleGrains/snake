@@ -1,6 +1,7 @@
 # Snake
-  Simple snake game for practicing
-  needs the *ncurses* library
+  Simple snake game for practicing\
+  \
+  Needs the *ncurses* library
 
 ## How to Play
   Move the snake with Arrow Keys
@@ -15,5 +16,5 @@ snake --help
 ## TODO
 - Re-factor the classes
 - Add an AI snake or another player
-- Better UI
 - Support more options
+- Better UI
