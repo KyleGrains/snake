@@ -20,8 +20,7 @@ static struct option long_options[] = {{"help", no_argument, 0, '?'},
 
 struct GamePlay {
   void operator()() {
-    using namespace std::chrono_literals;
-    constexpr std::chrono::milliseconds refresh_interval(100ms);
+    constexpr std::chrono::milliseconds refresh_interval(100);
 
     while (true) {
       GetInputCharacter();
