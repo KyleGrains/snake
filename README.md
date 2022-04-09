@@ -4,7 +4,7 @@
   Needs the *ncurses* library
 
 ## How to Play
-  Move the snake with Arrow Keys
+  Move the snake with Arrow Keys (or wasd/jkhl Keys)
 ```
 snake 
 ```

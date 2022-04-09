@@ -36,20 +36,24 @@ class NcursesScreen {
   bool IsGameOver();
 
   NcursesScreen() = default;
-  ~NcursesScreen() = default;
+  ~NcursesScreen();
 
  private:
   NcursesScreen(const NcursesScreen&) = delete;
   NcursesScreen& operator=(const NcursesScreen&) = delete;
   void GenerateFood();
-  int screen_width;
-  int screen_height;
-  characterType inputCharacter;
+
   Snake snake;
+  std::thread generateFoodThread;
+
   std::mutex foodMutex;
   std::condition_variable foodCond;
   Position foodPosition;
   std::atomic<bool> stopThread;
+
+  int screen_width;
+  int screen_height;
+  characterType inputCharacter;
   uint score;
 };
 

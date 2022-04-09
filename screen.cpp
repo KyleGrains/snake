@@ -35,6 +35,10 @@ void ShowHelp() {
             << "Start snake game with default screen size (full screen).\n";
 }
 
+NcursesScreen::~NcursesScreen() {
+  generateFoodThread.join();
+}
+
 void NcursesScreen::Init(GameMode gameMode, int height, int width) {
   if (gameMode == GameMode::Help) {
     ShowHelp();
@@ -74,7 +78,8 @@ void NcursesScreen::Init(GameMode gameMode, int height, int width) {
 
   inputCharacter = 'l';
 
-  std::thread([this] { this->GenerateFood(); }).detach();
+  generateFoodThread =
+      std::move(std::thread(&NcursesScreen::GenerateFood, this));
 }
 
 void NcursesScreen::GenerateFood() {
@@ -85,14 +90,14 @@ void NcursesScreen::GenerateFood() {
   random_distribution random_y_distribution(1, screen_height - 2);
 
   while (true) {
-    if (stopThread.load())
-      return;
     int x = random_x_distribution(e);
     int y = random_y_distribution(e);
 
     std::unique_lock<std::mutex> foodLock(foodMutex);
     foodCond.wait(foodLock,
                   [this] { return (foodPosition == Position(0, 0)); });
+    if (stopThread.load())
+      return;
     foodPosition = Position(y, x);
     mvaddch(foodPosition.y, foodPosition.x, 'o');
   }
@@ -140,8 +145,8 @@ void NcursesScreen::Update() {
     result = MoveResult::Eat;
   }
 
-  if (snakeHead.x == 0 || snakeHead.x == screen_width - 1 || 
-      snakeHead.y == 0 || snakeHead.y == screen_height - 1 )
+  if (snakeHead.x == 0 || snakeHead.x == screen_width - 1 || snakeHead.y == 0 ||
+      snakeHead.y == screen_height - 1)
     result = MoveResult::Hit;
 
   switch (result) {
@@ -184,5 +189,11 @@ void NcursesScreen::Uninit() {
 }
 
 bool NcursesScreen::IsGameOver() {
-  return ((stopThread.load()) || (inputCharacter == 'q'));
+  bool isGameOver = ((stopThread.load()) || (inputCharacter == 'q'));
+  if (isGameOver) {
+    std::lock_guard<std::mutex> lock(foodMutex);
+    foodPosition = Position(0, 0);
+    foodCond.notify_one();
+  }
+  return isGameOver;
 }
