@@ -57,9 +57,9 @@ void NcursesScreen::Init(GameMode gameMode, int height, int width) {
     border('|', '|', '-', '-', '+', '+', '+', '+');
   } else {
     mvvline(0, 0, '|', screen_height);
-    mvvline(0, screen_width, '|', screen_height);
-    mvhline(0, 0, '-', screen_width + 1);
-    mvhline(screen_height, 0, '-', screen_width + 1);
+    mvvline(0, screen_width - 1, '|', screen_height);
+    mvhline(0, 0, '-', screen_width);
+    mvhline(screen_height - 1, 0, '-', screen_width);
   }
   mvaddstr(0, 0, "Score: 0");
 
@@ -81,8 +81,8 @@ void NcursesScreen::GenerateFood() {
   std::random_device r;
   std::default_random_engine e(r());
   typedef std::uniform_int_distribution<int> random_distribution;
-  random_distribution random_x_distribution(1, screen_width - 1);
-  random_distribution random_y_distribution(1, screen_height - 1);
+  random_distribution random_x_distribution(1, screen_width - 2);
+  random_distribution random_y_distribution(1, screen_height - 2);
 
   while (true) {
     if (stopThread.load())
@@ -140,8 +140,8 @@ void NcursesScreen::Update() {
     result = MoveResult::Eat;
   }
 
-  if (snakeHead.x == 0 || snakeHead.x == screen_width || snakeHead.y == 0 ||
-      snakeHead.y == screen_height)
+  if (snakeHead.x == 0 || snakeHead.x == screen_width - 1 || 
+      snakeHead.y == 0 || snakeHead.y == screen_height - 1 )
     result = MoveResult::Hit;
 
   switch (result) {
