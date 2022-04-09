@@ -4,8 +4,8 @@
 #include <iostream>
 #include <random>
 
-void InitScreen(GameMode gameMode, int height, int width) {
-  NcursesScreen::GetInstance().Init(gameMode, height, width);
+void InitScreen(GameConfig gameConfig) {
+  NcursesScreen::GetInstance().Init(gameConfig);
 }
 
 void UninitScreen() {
@@ -39,8 +39,8 @@ NcursesScreen::~NcursesScreen() {
   generateFoodThread.join();
 }
 
-void NcursesScreen::Init(GameMode gameMode, int height, int width) {
-  if (gameMode == GameMode::Help) {
+void NcursesScreen::Init(GameConfig gameConfig) {
+  if (gameConfig.gameMode == GameMode::Help) {
     ShowHelp();
     exit(0);
   }
@@ -52,12 +52,12 @@ void NcursesScreen::Init(GameMode gameMode, int height, int width) {
   curs_set(0);
 
   getmaxyx(stdscr, screen_height, screen_width);
-  if (height && height < screen_height)
-    screen_height = height;
-  if (width && width < screen_width)
-    screen_width = width;
+  if (gameConfig.height && gameConfig.height < screen_height)
+    screen_height = gameConfig.height;
+  if (gameConfig.width && gameConfig.width < screen_width)
+    screen_width = gameConfig.width;
 
-  if (width == 0 && height == 0) {
+  if (gameConfig.width == 0 && gameConfig.height == 0) {
     border('|', '|', '-', '-', '+', '+', '+', '+');
   } else {
     mvvline(0, 0, '|', screen_height);

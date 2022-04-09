@@ -13,10 +13,12 @@
 #include <thread>
 #include <vector>
 
-static struct option long_options[] = {{"help", no_argument, 0, '?'},
-                                       {"width", required_argument, 0, 'w'},
-                                       {"height", required_argument, 0, 'h'},
-                                       {0, 0, 0, 0}};
+static struct option long_options[] = {
+    {"help", no_argument, 0, '?'},
+    {"width", required_argument, 0, 'w'},
+    {"height", required_argument, 0, 'h'},
+    {"playernumber", required_argument, 0, 'p'},
+    {0, 0, 0, 0}};
 
 struct GamePlay {
   void operator()() {
@@ -37,8 +39,9 @@ struct GamePlay {
 };
 
 int main(int argc, char** argv) {
-  int opt;
-  int width = 0, height = 0;
+  uint opt = '?';
+  uint width = 0, height = 0;
+  uint playerNumber = 1;
   GameMode gameMode = GameMode::Normal;
 
   while (1) {
@@ -51,18 +54,27 @@ int main(int argc, char** argv) {
         break;
       case 'h':
         if (optarg)
-          height = std::atoi(optarg);
+          height = static_cast<uint>(std::atoi(optarg));
         break;
       case 'w':
         if (optarg)
-          width = std::atoi(optarg);
+          width = static_cast<uint>(std::atoi(optarg));
         break;
+      case 'p':
+        if (optarg)
+          playerNumber = static_cast<uint>(std::atoi(optarg));
       default:
         gameMode = GameMode::Normal;
     }
   }
 
-  InitScreen(gameMode, height, width);
+  GameConfig gameConfig;
+  gameConfig.gameMode = gameMode;
+  gameConfig.height = height;
+  gameConfig.width = width;
+  gameConfig.playerNumber = playerNumber;
+
+  InitScreen(gameConfig);
 
   GamePlay()();
 

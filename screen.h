@@ -14,7 +14,7 @@
 #include "snake.h"
 #include "types.h"
 
-void InitScreen(GameMode gameMode, int height = 0, int width = 0);
+void InitScreen(GameConfig gameConfig);
 void UninitScreen();
 void GetInputCharacter();
 void UpdateScreen();
@@ -27,7 +27,7 @@ class NcursesScreen {
     static NcursesScreen screen;
     return screen;
   }
-  void Init(GameMode gameMode, int height = 0, int width = 0);
+  void Init(GameConfig gameConfig);
   void GetInputCharacter();
   void Update();
   void Refresh();

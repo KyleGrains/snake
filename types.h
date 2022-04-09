@@ -5,8 +5,8 @@ using uint = uint32_t;
 using characterType = int;
 
 struct Position {
-  int y;
-  int x;
+  uint y;
+  uint x;
   Position() : y(0), x(0){};
   Position(int ty, int tx) : y(ty), x(tx){};
   Position(const Position& rhs) : y(rhs.y), x(rhs.x){};
@@ -31,4 +31,12 @@ enum class Dot {
 };
 
 enum class GameMode { Normal, Help };
+
+struct GameConfig {
+  GameMode gameMode;
+  uint height;
+  uint width;
+  uint playerNumber;
+};
+
 #endif
