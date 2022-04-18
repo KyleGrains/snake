@@ -22,8 +22,6 @@ class Snake {
   bool HitItself();
   std::deque<Position> positions;
   Direction moveDirection;
-  int screen_width;
-  int screen_height;
 };
 
 #endif

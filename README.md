@@ -18,3 +18,4 @@ snake --help
 - Add an AI snake or another player
 - Support more options
 - Better UI
+- Highest Score

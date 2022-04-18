@@ -170,6 +170,8 @@ void NcursesScreen::Update() {
       stopThread.store(true);
       Clear();
       mvaddstr(screen_height / 2, screen_width / 2 - 4, "Game Over");
+      mvaddstr(screen_height / 2 + 1, screen_width / 2 - 4, "Press any button to quit");
+			GetInputCharacter();
       return;
     default:
       break;

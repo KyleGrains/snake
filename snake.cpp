@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include "types.h"
+#include <iostream>
 
 void Snake::InitPosition(int y, int x, int length) {
   for (int i = 0; i < 5; ++i)
@@ -14,7 +15,7 @@ MoveResult Snake::Move(Direction direction) {
       (direction == Direction::Up && moveDirection == Direction::Down) ||
       (moveDirection == Direction::Left && direction == Direction::Right) ||
       (direction == Direction::Left && moveDirection == Direction::Right)) {
-    moveDirection = moveDirection;
+    // moveDirection = moveDirection;
   } else
     moveDirection = direction;
 
