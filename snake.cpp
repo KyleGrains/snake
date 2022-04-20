@@ -6,7 +6,7 @@
 #include <iostream>
 
 void Snake::InitPosition(int y, int x, int length) {
-  for (int i = 0; i < 5; ++i)
+  for (int i = 0; i < length; ++i)
     positions.emplace_front(y, x + i);
 }
 
