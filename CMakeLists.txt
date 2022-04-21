@@ -10,6 +10,8 @@ find_package(Threads REQUIRED)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(snake main.cpp screen.cpp snake.cpp)
+add_executable(snake src/main.cpp src/screen.cpp src/snake.cpp)
+
+target_include_directories(snake PUBLIC include/)
 
 target_link_libraries(snake Threads::Threads ${CONAN_LIBS})
