@@ -8,7 +8,7 @@ struct Position {
   uint y;
   uint x;
   Position() : y(0), x(0){};
-  Position(int ty, int tx) : y(ty), x(tx){};
+  Position(uint ty, uint tx) : y(ty), x(tx){};
   Position(const Position& rhs) : y(rhs.y), x(rhs.x){};
   const Position& operator=(const Position& rhs) {
     y = rhs.y;

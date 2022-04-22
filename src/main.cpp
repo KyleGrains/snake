@@ -40,12 +40,12 @@ struct GamePlay {
 };
 
 int main(int argc, char** argv) {
-  int opt = '?';
   uint width = 0, height = 0;
   uint playerNumber = 1;
   GameMode gameMode = GameMode::Normal;
 
   while (1) {
+    int opt = '?';
     if ((opt = getopt_long(argc, argv, "?w:h:", long_options, NULL)) == -1)
       break;
 
