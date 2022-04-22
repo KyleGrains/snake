@@ -13,7 +13,7 @@ class Snake {
   void PopTail();
   void GrowBack(const Position& position);
 
-  const char GetBodyCharacter() const;
+  char GetBodyCharacter() const;
   const Position& GetHeadPosition() const;
   const Position& GetTailPosition() const;
   const std::deque<Position>& GetPositions() const;

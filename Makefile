@@ -1,5 +1,7 @@
-LDFLAGS = -lcurses -lpthread
-CXXFLAGS = -std=c++11
+LDFLAGS := -lcurses -lpthread
+CXXFLAGS := -std=c++11 -Werror -Wpedantic -Wall -Wextra
 
-all: main.cpp snake.cpp screen.cpp 
-	$(CXX) -o snake $^ $(LDFLAGS) $(CXXFLAGS)
+SRC := src/main.cpp src/snake.cpp src/screen.cpp 
+
+all: $(SRC)
+	$(CXX) -o snake $^ -I include/ $(LDFLAGS) $(CXXFLAGS)

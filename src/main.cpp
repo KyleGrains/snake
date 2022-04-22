@@ -21,6 +21,7 @@ static struct option long_options[] = {
     {0, 0, 0, 0}};
 
 struct GamePlay {
+  int x;
   void operator()() {
     constexpr std::chrono::milliseconds refresh_interval(100);
 
@@ -39,7 +40,7 @@ struct GamePlay {
 };
 
 int main(int argc, char** argv) {
-  uint opt = '?';
+  int opt = '?';
   uint width = 0, height = 0;
   uint playerNumber = 1;
   GameMode gameMode = GameMode::Normal;
@@ -63,6 +64,7 @@ int main(int argc, char** argv) {
       case 'p':
         if (optarg)
           playerNumber = static_cast<uint>(std::atoi(optarg));
+        break;
       default:
         gameMode = GameMode::Normal;
     }

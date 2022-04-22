@@ -70,7 +70,7 @@ void NcursesScreen::Init(GameConfig gameConfig) {
   snake.InitPosition(screen_height / 2, screen_width / 2);
   move(screen_height / 2, screen_width / 2);
   for (const auto& pos : snake.GetPositions())
-    addch(snake.GetBodyCharacter());
+    mvaddch(pos.y, pos.x, snake.GetBodyCharacter());
 
   foodPosition = Position(0, 0);
   score = 0;

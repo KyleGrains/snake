@@ -51,8 +51,8 @@ class NcursesScreen {
   Position foodPosition;
   std::atomic<bool> stopThread;
 
-  int screen_width;
-  int screen_height;
+  uint screen_width;
+  uint screen_height;
   characterType inputCharacter;
   uint score;
 };

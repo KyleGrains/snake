@@ -52,7 +52,7 @@ void Snake::GrowBack(const Position& position) {
   positions.push_back(position);
 }
 
-const char Snake::GetBodyCharacter() const {
+char Snake::GetBodyCharacter() const {
   return '*';
 }
 

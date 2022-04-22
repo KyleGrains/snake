@@ -10,6 +10,11 @@ struct Position {
   Position() : y(0), x(0){};
   Position(int ty, int tx) : y(ty), x(tx){};
   Position(const Position& rhs) : y(rhs.y), x(rhs.x){};
+  const Position& operator=(const Position& rhs) {
+    y = rhs.y;
+    x = rhs.x;
+    return *this;
+  }
   friend bool operator==(const Position& lhs, const Position& rhs) {
     return (lhs.y == rhs.y) && (lhs.x == rhs.x);
   }
