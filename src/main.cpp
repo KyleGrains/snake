@@ -1,24 +1,32 @@
 #include "screen.h"
 #include "types.h"
 
-#include <curses.h>
+#include <docopt/docopt.h>
+
 #include <getopt.h>
 #include <unistd.h>
 
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
 
-static struct option long_options[] = {
-    {"help", no_argument, 0, '?'},
-    {"width", required_argument, 0, 'w'},
-    {"height", required_argument, 0, 'h'},
-    {"playernumber", required_argument, 0, 'p'},
-    {0, 0, 0, 0}};
+static constexpr char USAGE[] = 
+R"(Snake.
+    Usage:
+      snake
+      snake [(-x | --width) <width>] [(-y | --height) <height>]
+      snake (-h | --help)
+      snake --version    
+
+    Options:
+      -h --help  Show this screen
+      --version  Show version
+)";
 
 struct GamePlay {
   int x;
@@ -44,30 +52,15 @@ int main(int argc, char** argv) {
   uint playerNumber = 1;
   GameMode gameMode = GameMode::Normal;
 
-  while (1) {
-    int opt = '?';
-    if ((opt = getopt_long(argc, argv, "?w:h:", long_options, NULL)) == -1)
-      break;
+  std::map<std::string, docopt::value> args = 
+    docopt::docopt(USAGE, {argv + 1, argv + argc}, true, "1.0");
 
-    switch (opt) {
-      case '?':
-        gameMode = GameMode::Help;
-        break;
-      case 'h':
-        if (optarg)
-          height = static_cast<uint>(std::atoi(optarg));
-        break;
-      case 'w':
-        if (optarg)
-          width = static_cast<uint>(std::atoi(optarg));
-        break;
-      case 'p':
-        if (optarg)
-          playerNumber = static_cast<uint>(std::atoi(optarg));
-        break;
-      default:
-        gameMode = GameMode::Normal;
-    }
+  for(const auto& arg : args)
+  {
+    if(arg.first == "<height>" && arg.second)
+      height = static_cast<uint>(arg.second.asLong());
+    else if(arg.first == "<width>" && arg.second)
+      width = static_cast<uint>(arg.second.asLong());
   }
 
   GameConfig gameConfig;

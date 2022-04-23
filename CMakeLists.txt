@@ -34,4 +34,4 @@ add_executable(snake src/main.cpp src/screen.cpp src/snake.cpp)
 
 target_include_directories(snake PUBLIC include/)
 
-target_link_libraries(snake Threads::Threads ncurses project_options)
+target_link_libraries(snake ${CONAN_LIBS} Threads::Threads ncurses project_options)

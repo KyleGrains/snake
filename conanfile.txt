@@ -1,5 +1,7 @@
 [requires]
 ncurses/6.3
+docopt.cpp/0.6.3
+spdlog/1.10.0
 
 [generators]
 cmake

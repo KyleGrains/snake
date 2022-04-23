@@ -28,22 +28,11 @@ bool IsGameOver() {
   return NcursesScreen::GetInstance().IsGameOver();
 }
 
-void ShowHelp() {
-  std::cout << "Usage: snake [-?]        [--help]\n"
-            << "             [-w <size>] [--width=<size>]\n"
-            << "             [-h <size>] [--height=<size>]\n"
-            << "Start snake game with default screen size (full screen).\n";
-}
-
 NcursesScreen::~NcursesScreen() {
   generateFoodThread.join();
 }
 
 void NcursesScreen::Init(GameConfig gameConfig) {
-  if (gameConfig.gameMode == GameMode::Help) {
-    ShowHelp();
-    exit(0);
-  }
   initscr();
   keypad(stdscr, TRUE);
   cbreak();
